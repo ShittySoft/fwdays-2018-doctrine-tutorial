@@ -4,6 +4,7 @@ namespace Infrastructure\Authentication\Query;
 
 use Authentication\Query\UserExists;
 use Authentication\Repository\Users;
+use Authentication\Value\EmailAddress;
 
 final class UserExistsThroughUglyHacks implements UserExists
 {
@@ -17,7 +18,7 @@ final class UserExistsThroughUglyHacks implements UserExists
         $this->users = $users;
     }
 
-    public function __invoke(string $emailAddress) : bool
+    public function __invoke(EmailAddress $emailAddress) : bool
     {
         try {
             $this->users->get($emailAddress);

@@ -2,7 +2,9 @@
 
 namespace Authentication\Query;
 
+use Authentication\Value\EmailAddress;
+
 interface UserExists
 {
-    public function __invoke(string $emailAddress) : bool;
+    public function __invoke(EmailAddress $emailAddress) : bool;
 }

@@ -4,6 +4,7 @@ namespace Infrastructure\Authentication\Repository;
 
 use Authentication\Entity\User;
 use Authentication\Repository\Users;
+use Authentication\Value\EmailAddress;
 
 class FileUsers implements Users
 {
@@ -19,18 +20,19 @@ class FileUsers implements Users
         }
     }
 
-    public function get(string $emailAddress) : User
+    public function get(EmailAddress $emailAddress) : User
     {
         $existingUsers = unserialize(file_get_contents($this->filePath));
+        $stringAddress = $emailAddress->toString();
 
-        if (! array_key_exists($emailAddress, $existingUsers)) {
+        if (! array_key_exists($stringAddress, $existingUsers)) {
             throw new \OutOfBoundsException(sprintf(
                 'User "%s" does not exist',
-                $emailAddress
+                $stringAddress
             ));
         }
 
-        return $existingUsers[$emailAddress];
+        return $existingUsers[$stringAddress];
     }
 
     public function store(User $user) : void
@@ -41,7 +43,7 @@ class FileUsers implements Users
 
         $emailReflection->setAccessible(true);
 
-        $existingUsers[$emailReflection->getValue($user)] = $user;
+        $existingUsers[$emailReflection->getValue($user)->toString()] = $user;
 
         file_put_contents($this->filePath, serialize($existingUsers));
     }

@@ -2,6 +2,8 @@
 
 namespace MyApp;
 
+use Authentication\Value\EmailAddress;
+use Authentication\Value\PlainTextPassword;
 use Infrastructure\Authentication\Query\UserExistsThroughUglyHacks;
 use Infrastructure\Authentication\Repository\FileUsers;
 
@@ -11,8 +13,8 @@ use Infrastructure\Authentication\Repository\FileUsers;
 
     require_once __DIR__ . '/../vendor/autoload.php';
 
-    $email      = $_POST['emailAddress'];
-    $password   = $_POST['password'];
+    $email      = EmailAddress::fromString($_POST['emailAddress']);
+    $password   = PlainTextPassword::fromString($_POST['password']);
     $repository = new FileUsers(__DIR__ . '/../data/users.dat');
     $userExists = new UserExistsThroughUglyHacks($repository);
 
@@ -37,7 +39,3 @@ use Infrastructure\Authentication\Repository\FileUsers;
 
     echo 'OK';
 })();
-
-// discuss: should the fetching by password happen at database level?
-//          Should it happen inside the entity?
-//          Or in a service?
