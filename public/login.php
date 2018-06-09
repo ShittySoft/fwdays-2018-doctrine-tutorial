@@ -4,8 +4,8 @@ namespace MyApp;
 
 use Authentication\Value\EmailAddress;
 use Authentication\Value\PlainTextPassword;
-use Infrastructure\Authentication\Query\UserExistsThroughUglyHacks;
-use Infrastructure\Authentication\Repository\FileUsers;
+use Infrastructure\Authentication\Query\DQLBasedUserExists;
+use Infrastructure\Authentication\Repository\DoctrineUsers;
 
 (function () {
     ini_set('display_errors', (string) true);
@@ -13,10 +13,12 @@ use Infrastructure\Authentication\Repository\FileUsers;
 
     require_once __DIR__ . '/../vendor/autoload.php';
 
+    $entityManager = require __DIR__ . '/../bootstrap.php';
+
     $email      = EmailAddress::fromString($_POST['emailAddress']);
     $password   = PlainTextPassword::fromString($_POST['password']);
-    $repository = new FileUsers(__DIR__ . '/../data/users.dat');
-    $userExists = new UserExistsThroughUglyHacks($repository);
+    $repository = new DoctrineUsers($entityManager);
+    $userExists = new DQLBasedUserExists($entityManager);
 
     if (! $userExists($email)) {
         http_response_code(401);
