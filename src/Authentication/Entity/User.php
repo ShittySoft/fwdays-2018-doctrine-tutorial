@@ -53,4 +53,9 @@ class User
 
         return $instance;
     }
+
+    public function logIn(string $password) : bool
+    {
+        return password_verify($password, $this->passwordHash);
+    }
 }
