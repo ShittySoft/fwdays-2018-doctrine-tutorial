@@ -1,11 +1,25 @@
 <?php
 
-// registering a new user:
+namespace MyApp;
 
-// 1. check if a user with the same email address exists
-// 2. if not, create a user
-// 3. hash the password
-// 4. send the email to confirm activation (we will just display it)
-// 5. save the user
+use Authentication\Entity\User;
+use Infrastructure\Authentication\Notification\NotifyUserOfRegistrationInTerminal;
+use Infrastructure\Authentication\Query\UserExistsThroughUglyHacks;
+use Infrastructure\Authentication\Repository\FileUsers;
 
-// Tip: discuss - email or saving? Chicken-egg problem
+(function () {
+    ini_set('display_errors', (string) true);
+    ini_set('error_reporting', (string) \E_ALL);
+
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    $email      = $_POST['emailAddress'];
+    $password   = $_POST['password'];
+    $repository = new FileUsers(__DIR__ . '/../data/users.dat');
+    $userExists = new UserExistsThroughUglyHacks($repository);
+    $notify     = new NotifyUserOfRegistrationInTerminal();
+
+    $repository->store(User::register($email, $password, $userExists, $notify));
+
+    echo 'OK';
+})();
